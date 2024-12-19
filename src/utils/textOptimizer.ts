@@ -8,8 +8,8 @@ export const optimizeText = () => {
           el.style.fontSize = '12px';
         }
         el.style.textRendering = 'optimizeLegibility';
-        el.style.webkitFontSmoothing = 'antialiased';
-        el.style.mozOsxFontSmoothing = 'grayscale';
+        // el.style.webkitFontSmoothing = 'antialiased';
+        // el.style.mozOsxFontSmoothing = 'grayscale';
       }
     });
   };

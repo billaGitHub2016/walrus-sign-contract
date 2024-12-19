@@ -2,7 +2,7 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
 const A4_WIDTH_MM = 210;
-const A4_HEIGHT_MM = 297;
+// const A4_HEIGHT_MM = 297;
 
 export const generatePDF = async ({
     contractDom,

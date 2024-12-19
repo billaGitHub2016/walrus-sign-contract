@@ -5,9 +5,11 @@ import {
     BarChartOutlined,
 } from '@ant-design/icons';
 import { Button, Layout, Menu } from 'antd';
-import { useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
 import { ConnectButton } from '@mysten/dapp-kit';
 import './layout.css';
+import { Breadcrumb } from 'antd';
+import { routes } from '../../main.tsx'
 
 const { Header, Sider, Content } = Layout;
 
@@ -18,6 +20,8 @@ const App: React.FC = () => {
     // } = theme.useToken();
 
     const navigate = useNavigate();
+
+
 
     const location = useLocation();
 
@@ -38,7 +42,7 @@ const App: React.FC = () => {
             >
                 <>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                        <div className="left">
+                        <div className="flex w-1/4">
                             <Button
                                 type='text'
                                 icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -50,7 +54,7 @@ const App: React.FC = () => {
                                     color: '#fff',
                                 }}
                             />
-                            {/* <h1>SUI-CS</h1> */}
+                            <h1>SUI-Contracts</h1>
                         </div>
 
                         <ConnectButton />
@@ -78,17 +82,45 @@ const App: React.FC = () => {
                 <Content
                     style={{
                         // margin: '16px',
-                        padding: 24,
+                        padding: '16px 24px 16px 24px',
                         minHeight: 280,
                         // background: colorBgContainer,
                         // borderRadius: borderRadiusLG,
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
-                >
-                    <Outlet />
+                >   
+                    <BreadcrumbComponent />
+                    <div className='flex-grow'>
+                        <Outlet/>
+                    </div>
                 </Content>
             </Layout>
         </Layout>
     );
 };
+
+function BreadcrumbComponent() {
+    const location = useLocation();
+    const breadcrumbNameMap = new Map(routes.map(item => [item.path, item.breadcrumbName]));
+
+    const pathSnippets = location.pathname.split('/').filter(i => i);
+    const extraBreadcrumbItems = pathSnippets.map((_, index) => {
+        const url = `/${pathSnippets.slice(0, index + 1).join('/')}`;
+        return (
+            <Breadcrumb.Item key={url}>
+                <Link to={url}>{breadcrumbNameMap.get(url)}</Link>
+            </Breadcrumb.Item>
+        );
+    });
+
+    const breadcrumbItems = [
+        <Breadcrumb.Item key="home">
+            <Link to="/">首页</Link>
+        </Breadcrumb.Item>
+    ].concat(extraBreadcrumbItems);
+
+    return <Breadcrumb className='mb-4'>{breadcrumbItems}</Breadcrumb>;
+}
 
 export default App;

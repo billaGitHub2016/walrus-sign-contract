@@ -15,8 +15,7 @@ const ContractContent = forwardRef(({signature}: ContractContentProps, refInstan
           </div>
           <p>这是一份示例合同，用于演示合同签署流程。</p>
           <p>
-            <strong>加粗</strong>
-            <em>斜体</em>
+            <strong>重要重要重要</strong>
           </p>
           <ul>
             <li>第一点</li>
@@ -33,7 +32,4 @@ const ContractContent = forwardRef(({signature}: ContractContentProps, refInstan
 });
 
 export default ContractContent;
-function useRef<T>(arg0: null) {
-    throw new Error("Function not implemented.");
-}
 
