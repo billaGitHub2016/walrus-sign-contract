@@ -1,6 +1,10 @@
-import { Button, Card, Space, Table, TableProps } from "antd";
+import { Button, Card, GetProp, message, Space, Table, TableProps } from "antd";
 import { RedoOutlined } from "@ant-design/icons";
 import { useState } from "react";
+import { suiClient } from "../../config/sui-network";
+import { SuiObjectResponse } from "@mysten/sui/client";
+import { useCurrentAccount } from "@mysten/dapp-kit";
+import { packageId } from "../sign-contract";
 
 type TablePaginationConfig = Exclude<
   GetProp<TableProps, "pagination">,
@@ -23,60 +27,47 @@ const MyContracts: React.FC = () => {
       pageSize: 10,
     },
   });
+  const account = useCurrentAccount();
 
-  const fetchData = ({
-    pageNo,
-    pageSize,
-    searchData,
-  }: {
-    pageNo?: number | undefined;
-    pageSize?: number | undefined;
-    searchData?: any;
-  }) => {
+  const fetchData = async () => {
     setLoading(true);
-    setTimeout(() => {
+    // setTimeout(() => {
+    //   setLoading(false);
+    // }, 2000);
+    try {
+      const nftList = await getAllNfts();
+      setData(nftList.map((item: any) => item.data.content.fields));
+    } catch (err: any) {
+      message.error(err.message);
+    } finally {
       setLoading(false);
-    }, 2000);
-    // return getAllTags().then((tagsData) => {
-    //   return http({
-    //     url: "/api/data",
-    //     params: {
-    //       pageNo: pageNo || 1,
-    //       pageSize: pageSize || 10,
-    //       ...searchData,
-    //     },
-    //   }).then(({ data }) => {
-    //     const dataList = data.dataInfo.map((item: any, index: number) => {
-    //       const tags = item.tags.map((id: string) => {
-    //         const match = tagsData.find(
-    //           (tag: { id: string; name: string }) => tag.id === id
-    //         );
-    //         return {
-    //           id,
-    //           // @ts-ignore
-    //           name: match && match.name,
-    //         };
-    //       });
-    //       return {
-    //         seqNo:
-    //           (data.pageInfo.pageNo - 1) * data.pageInfo.pageSize + index + 1,
-    //         ...item,
-    //         tags,
-    //       };
-    //     });
-    //     setData(dataList);
-    //     setLoading(false);
-    //     setTableParams({
-    //       pagination: {
-    //         ...tableParams.pagination,
-    //         current: data.pageInfo.pageNo,
-    //         pageSize: data.pageInfo.pageSize,
-    //         total: data.pageInfo.total,
-    //         // total: 59
-    //       },
-    //     });
-    //   });
-    // });
+    }
+  };
+
+  const getAllNfts = async () => {
+    let hasNextPage = true;
+    let nextCursor: string | null = null;
+    let allObjects: SuiObjectResponse[] = [];
+    while (hasNextPage) {
+      const response = await suiClient.getOwnedObjects({
+        owner: account?.address as string,
+        options: {
+          showContent: true,
+          // showDisplay: true,
+          showType: true,
+        },
+        cursor: nextCursor,
+        filter: {
+          StructType: `${packageId}::c_nft::CNFT`,
+        },
+      });
+
+      allObjects = allObjects.concat(response.data);
+      console.log("object res = ", response);
+      hasNextPage = response.hasNextPage;
+      nextCursor = response.nextCursor ?? null;
+    }
+    return allObjects;
   };
 
   return (
@@ -89,13 +80,7 @@ const MyContracts: React.FC = () => {
           marginBottom: "15px",
         }}
       >
-        <Button
-          onClick={() =>
-            fetchData({
-              pageNo: tableParams.pagination?.current,
-            })
-          }
-        >
+        <Button onClick={() => fetchData()}>
           <RedoOutlined />
           刷新
         </Button>
@@ -149,7 +134,6 @@ const ContractTable = (props: ContractTableProps) => {
       columns={columns}
       rowKey={(_, index) => index as number}
       dataSource={props.dataSource}
-      pagination={props.pagination}
       loading={props.loading}
       scroll={{ y: "calc(100vh - 450px)" }}
     />
