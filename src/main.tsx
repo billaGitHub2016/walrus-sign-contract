@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NotFoundPage from "./views/404";
 import SuiProvider from "./context/sui-provider.tsx";
 import SignContract from "./views/sign-contract";
+import MyContracts from "./views/my-contracts";
 
 const router = createBrowserRouter([
   {
@@ -29,10 +30,10 @@ const router = createBrowserRouter([
           path: 'sign-contract',
           element: <SignContract></SignContract>,
       },
-      // {
-      //     path: 'tags',
-      //     element: <TagsPage></TagsPage>,
-      // },
+      {
+          path: 'my-contracts',
+          element: <MyContracts></MyContracts>,
+      },
     ],
   },
 ]);

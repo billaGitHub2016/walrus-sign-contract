@@ -68,7 +68,7 @@ const App: React.FC = () => {
                         onClick={onMenuClick}
                         items={[
                             {
-                                key: '/datas',
+                                key: '/my-contracts',
                                 icon: <BarChartOutlined />,
                                 label: '我的合同'
                             }
